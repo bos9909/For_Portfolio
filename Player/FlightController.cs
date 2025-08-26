@@ -15,7 +15,7 @@ public class PlayerControllerWithMouseAim : MonoBehaviour
 
     private CharacterController characterController;
     private Vector3 aimPoint;
-    public float rayDistance = 1000f;
+    public float rayDistance = 500f;
     
     private Vector3 currentVelocity = Vector3.zero;  // 현재 이동 속도
     public float acceleration = 30f;                // 가속도

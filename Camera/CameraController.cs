@@ -7,10 +7,10 @@ public class CameraFollowMouse : MonoBehaviour
     public float smoothSpeed = 5f;
 
     [Header("카메라 회전 제한")]
-    public float yawMin = -60f;   // 좌우 제한
-    public float yawMax = 60f;
+    public float yawMin = -30f;   // 좌우 제한
+    public float yawMax = 30f;
     public float pitchMin = -20f; // 위아래 제한
-    public float pitchMax = 45f;
+    public float pitchMax = 20f;
 
     private float yaw;
     private float pitch;
@@ -38,7 +38,6 @@ public class CameraFollowMouse : MonoBehaviour
         // 마우스를 yaw/pitch에 반영
         yaw = Mathf.Clamp(mouse.x * yawMax, yawMin, yawMax);
         pitch = Mathf.Clamp(-mouse.y * pitchMax, pitchMin, pitchMax);
-        //내 생각은 아닌데?
 
         //카메라 회전 적용
         Quaternion targetRot = Quaternion.Euler(pitch, yaw + player.eulerAngles.y, 0f);
