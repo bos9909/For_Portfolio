@@ -1,10 +1,16 @@
 using System;
+using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    //표준 속도 300 정도가 적당하다. 날라댕기는 게임이라 100dlaus 너무 느림
+    //발사, 충돌시 재생할 이펙트
+    [SerializeField]
+    public GameObject hitEffect;
+    public GameObject fireEffect;
+    
+    //표준 속도 300 정도가 적당하다. 날라댕기는 게임이라 100이면 너무 느림
     public float speed = 300f;
     public float lifeTime = 3f;
     public float damage = 10f;
@@ -12,7 +18,6 @@ public class Bullet : MonoBehaviour
     //플레이어 속도보다 더 빠르게 발사되기 위한 벡터 3 변수
     private float spawnTime;
     private Vector3 velocity;
-
     Rigidbody bulletRigidbody;
     
     private void OnEnable()
@@ -26,7 +31,6 @@ public class Bullet : MonoBehaviour
         }
         transform.position = Vector3.zero; // 위치 초기화
         transform.rotation = Quaternion.identity; // 방향 초기화
-        
     }
 
     private void Awake()
@@ -45,6 +49,7 @@ public class Bullet : MonoBehaviour
     {
         if (Time.time - spawnTime > lifeTime)
         {
+            //시간 지나면 풀로 반환
             PoolManager.Instance.Return("Bullet", gameObject);
         }
     }
@@ -65,5 +70,14 @@ public class Bullet : MonoBehaviour
         }
 
         PoolManager.Instance.Return("Bullet", gameObject);
+    }
+    
+    //발사, 충돌시 이펙트 재생용
+    IEnumerator PlayHitEffect(GameObject effect)
+    {
+        effect.SetActive(true);
+        float effectTime = effect.GetComponent<ParticleSystem>().main.duration;
+        yield return new WaitForSeconds(effectTime);
+        effect.SetActive(false);
     }
 }

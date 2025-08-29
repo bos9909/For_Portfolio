@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerControllerWithMouseAim : MonoBehaviour
@@ -46,7 +47,7 @@ public class PlayerControllerWithMouseAim : MonoBehaviour
         HandleAltitude();
         PlayerLookAt();
     }
-
+    
     private void HandleMovement()
     {
         // 입력 받기: 좌우(A/D), 전후(W/S)
@@ -61,6 +62,7 @@ public class PlayerControllerWithMouseAim : MonoBehaviour
         forward.y = 0f;
         right.y = 0f;
 
+        // 표준화
         forward.Normalize();
         right.Normalize();
 
@@ -87,34 +89,24 @@ public class PlayerControllerWithMouseAim : MonoBehaviour
     }
 
     
+    [SerializeField] private float altitudeLerpSpeed = 5f;
+
+    private float altitudeInputSmoothed = 0f;
+
     private void HandleAltitude()
     {
-        // 목표 고도 변화 계산
         float altitudeInput = 0f;
 
         if (Input.GetKey(KeyCode.Space))
-        {
-            altitudeInput += 1f; // 상승
-        }
+            altitudeInput = 1f;
         else if (Input.GetKey(KeyCode.LeftControl))
-        {
-            altitudeInput -= 1f; // 하강
-        }
+            altitudeInput = -1f;
 
-        // 목표 속도 설정
-        float targetAltitudeChange = altitudeInput * altitudeSpeed;
+        // 입력을 Lerp로 부드럽게
+        altitudeInputSmoothed = Mathf.Lerp(altitudeInputSmoothed, altitudeInput, Time.deltaTime * altitudeLerpSpeed);
 
-        // 관성 적용
-        if (altitudeInput != 0)
-        {
-            // 고도 가속
-            altitudeVelocity = Mathf.MoveTowards(altitudeVelocity, targetAltitudeChange, altitudeAcceleration * Time.deltaTime);
-        }
-        else
-        {
-            // 고도 감속
-            altitudeVelocity = Mathf.MoveTowards(altitudeVelocity, 0f, altitudeDeceleration * Time.deltaTime);
-        }
+        // 실제 속도 = 부드러워진 입력 * 최대 속도
+        float altitudeVelocity = altitudeInputSmoothed * altitudeSpeed;
 
         // 이동 적용
         float newAltitude = transform.position.y + altitudeVelocity * Time.deltaTime;
@@ -123,6 +115,44 @@ public class PlayerControllerWithMouseAim : MonoBehaviour
         transform.position = new Vector3(transform.position.x, newAltitude, transform.position.z);
     }
 
+    // private void HandleAltitude()
+    // {
+    //     // 목표 고도 변화 계산
+    //     float altitudeInput = 0f;
+    //
+    //     if (Input.GetKey(KeyCode.Space))
+    //     {
+    //         altitudeInput = 1f; // 상승
+    //     }
+    //     else if (Input.GetKey(KeyCode.LeftControl))
+    //     {
+    //         altitudeInput = -1f; // 하강
+    //     }
+    //
+    //     // 목표 속도 설정
+    //     float targetAltitudeChange = altitudeInput * altitudeSpeed;
+    //
+    //     // 관성 적용
+    //     if (altitudeInput != 0)
+    //     {
+    //         // 고도 가속
+    //         altitudeVelocity = Mathf.MoveTowards(altitudeVelocity, targetAltitudeChange, altitudeAcceleration * Time.deltaTime);
+    //     }
+    //     else
+    //     {
+    //         // 고도 감속
+    //         altitudeVelocity = Mathf.MoveTowards(altitudeVelocity, 0f, altitudeDeceleration * Time.deltaTime);
+    //     }
+    //
+    //     // 이동 적용
+    //     float newAltitude = transform.position.y + altitudeVelocity * Time.deltaTime;
+    //     newAltitude = Mathf.Clamp(newAltitude, minAltitude, maxAltitude);
+    //
+    //     transform.position = new Vector3(transform.position.x, newAltitude, transform.position.z);
+    // }
+
+    
+    
     public float rotationSpeed = 5f; // 회전 속도
 
     public void PlayerLookAt()
