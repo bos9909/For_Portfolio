@@ -31,6 +31,7 @@ public class Bullet : MonoBehaviour
         }
         transform.position = Vector3.zero; // 위치 초기화
         transform.rotation = Quaternion.identity; // 방향 초기화
+
     }
 
     private void Awake()
@@ -59,25 +60,35 @@ public class Bullet : MonoBehaviour
         // 발사자 속도 + 총알 속도를 합쳐 이동 방향을 결정
         bulletRigidbody.linearVelocity = shooterVelocity;
         bulletRigidbody.linearVelocity += transform.forward * speed;
+        EffectManager.Instance.PlayEffect("Flash04", transform.position, Quaternion.identity);
     }
 
-    private void OnTriggerEnter(Collider other)
+    // private void OnTriggerEnter(Collider other)
+    // {
+    //     IDamageable damageable = other.GetComponent<IDamageable>();
+    //     if (damageable != null)
+    //     {
+    //         damageable.TakeDamage((int)damage);
+    //     }
+    //
+    //     StartCoroutine(PlayHitEffect(hitEffect));
+    //     PoolManager.Instance.Return("Bullet", gameObject);
+    // }
+
+    void OnCollisionEnter(Collision other)
     {
-        IDamageable damageable = other.GetComponent<IDamageable>();
+        IDamageable damageable = other.gameObject.GetComponent<IDamageable>();
         if (damageable != null)
         {
             damageable.TakeDamage((int)damage);
         }
-
+        
+        //충돌 지점
+        Vector3 hitPoint = other.contacts[0].point;
+        
+        EffectManager.Instance.PlayEffect("Hit04", hitPoint , Quaternion.identity);
         PoolManager.Instance.Return("Bullet", gameObject);
     }
     
-    //발사, 충돌시 이펙트 재생용
-    IEnumerator PlayHitEffect(GameObject effect)
-    {
-        effect.SetActive(true);
-        float effectTime = effect.GetComponent<ParticleSystem>().main.duration;
-        yield return new WaitForSeconds(effectTime);
-        effect.SetActive(false);
-    }
+
 }

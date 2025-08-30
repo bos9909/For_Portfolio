@@ -63,10 +63,11 @@ public class Damageable : MonoBehaviour, IDamageable
     private void HitParticlePlay(ContactPoint[] other)
     {
         //충돌지점의 위치와 법선 벡터를 가져와서 위치 조정
-        GameObject hitEffect = PoolManager.Instance.Get("HitEffect").gameObject;
-        hitEffect.transform.position = other[0].point;
-        hitEffect.transform.rotation = Quaternion.LookRotation(other[0].normal);
-        hitEffect.SetActive(true);
+        EffectManager.Instance.PlayEffect("HitEffect01", other[0].point, Quaternion.Euler(other[0].normal));
+        // GameObject hitEffect = PoolManager.Instance.Get("HitEffect").gameObject;
+        // hitEffect.transform.position = other[0].point;
+        // hitEffect.transform.rotation = Quaternion.LookRotation(other[0].normal);
+        // hitEffect.SetActive(true);
     }
 
     private void DestroyEffectPlay(Collision other)
