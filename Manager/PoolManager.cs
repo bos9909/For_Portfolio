@@ -17,10 +17,7 @@ public class PoolManager : MonoBehaviour
 //     되돌릴 때
 //     PoolManager.Instance.Return("Bullet", bullet);
 //     PoolManager.Instance.Return("HitFX", effect);
-    
-    
-    
-    
+
     //싱글톤으로 관리
     public static PoolManager Instance;
 

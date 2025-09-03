@@ -39,6 +39,7 @@ public class EffectManager : MonoBehaviour
 
     /// <summary>
     /// 지정된 위치에서 이펙트 실행
+    /// 이미 짜놓은 오브젝트 풀 스크립트를 기반으로 작성
     /// </summary>
     public void PlayEffect(string key, Vector3 position, Quaternion rotation)
     {
