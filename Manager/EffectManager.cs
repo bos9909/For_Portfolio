@@ -74,7 +74,11 @@ public class EffectManager : MonoBehaviour
     private IEnumerator ReturnEffectAfter(float delay, string key, GameObject effectObj)
     {
         yield return new WaitForSeconds(delay);
-        effectObj.SetActive(false);
+        if (effectObj.activeSelf)
+        {
+            effectObj.SetActive(false);
+        }
+
         effectPools[key].Enqueue(effectObj);
     }
 }

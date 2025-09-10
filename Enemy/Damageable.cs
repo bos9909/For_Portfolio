@@ -64,6 +64,7 @@ public class Damageable : MonoBehaviour, IDamageable
     {
         //충돌지점의 위치와 법선 벡터를 가져와서 위치 조정
         EffectManager.Instance.PlayEffect("HitEffect01", other[0].point, Quaternion.Euler(other[0].normal));
+        //이 더미 코드는 나중에 정리해야함
         // GameObject hitEffect = PoolManager.Instance.Get("HitEffect").gameObject;
         // hitEffect.transform.position = other[0].point;
         // hitEffect.transform.rotation = Quaternion.LookRotation(other[0].normal);
@@ -76,7 +77,7 @@ public class Damageable : MonoBehaviour, IDamageable
     }
     
 
-    //총알 처럼 작은 물체는 온 트리거 엔터와 레이캐스트로 충돌지점을 잡는 게 났다고 함 나중에 수정.
+    //충돌시 호출
     private void OnCollisionEnter(Collision other)
     {
         StartCoroutine(FlashOnHit());

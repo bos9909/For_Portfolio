@@ -6,11 +6,14 @@ public class Gun : WeaponBase
 {
     public Transform firepoint;
     public Rigidbody planeRigidbody; //본체의 리지드바디
+    public GameObject muzzleFlash;
     
     public override void Attack()
     {
         if (!IsReady()) return;
 
+        muzzleFlash.SetActive(true);
+        
         // 발사 방향 보정: 우주선의 현재 회전을 무시하고 총구의 "forward"를 기준으로 설정
         Vector3 fireDirection = firepoint.forward.normalized; // 항상 총구의 forward 방향으로 설정
         
