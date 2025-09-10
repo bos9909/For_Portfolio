@@ -8,5 +8,5 @@ public interface IDamageable
     //피해받는 함수 상속받는 쪽에서 상세구현
     void TakeDamage(int amount);
 
-    IEnumerator FlashOnHit();
+    //IEnumerator FlashOnHit();
 }

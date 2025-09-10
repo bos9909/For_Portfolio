@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: Dummy
   maxHp: 100
+  moveSpeed: 5
+  rotaitonSpeed: 5
+  stopDistance: 5
