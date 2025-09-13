@@ -13,14 +13,26 @@ public class Damageable : MonoBehaviour, IDamageable
     //따로 밖에서 넣어야함
     private Renderer originalRenderer;
     private Material tempMaterial;
-    public Material hitMaterial ;
+    //public Material hitMaterial ;
     
+    [Header("피격 머티리얼 설정")]
+    [Tooltip("평상시 사용할 오리지널 머티리얼")]
+    [SerializeField] private Material originalMaterial;
+    [Tooltip("피격 시 잠시 보여줄 하얀색 또는 붉은색 머티리얼")]
+    [SerializeField] private Material hitMaterial;
+    
+    private Renderer objectRenderer;
+    
+    bool isInvincible = false;
     
     private void Awake()
     {
         mmfPlayer = GetComponent<MMF_Player>();
-        originalRenderer = GetComponent<Renderer>();
-        tempMaterial = originalRenderer.material;
+        objectRenderer = GetComponent<Renderer>();
+        if (originalMaterial == null)
+        {
+            originalMaterial = objectRenderer.sharedMaterial;
+        }
     }
 
     void Start()
@@ -47,11 +59,13 @@ public class Damageable : MonoBehaviour, IDamageable
 
     public IEnumerator FlashOnHit()
     {
-        if (hitMaterial)
+        if (hitMaterial && !isInvincible)
         {
-            originalRenderer.material = hitMaterial;
+            isInvincible = true;
+            objectRenderer.material = hitMaterial;
             yield return new WaitForSeconds(0.05f);
-            originalRenderer.material = tempMaterial;
+            objectRenderer.material = originalMaterial;
+            isInvincible = false;
         }
         else
         {
@@ -71,6 +85,11 @@ public class Damageable : MonoBehaviour, IDamageable
         // hitEffect.SetActive(true);
     }
 
+    // private void HitParticlePlay(Vector3 hitPoint)
+    // {
+    //     EffectManager.Instance.PlayEffect("HitEffect01", hitPoint, Quaternion.identity);
+    // }
+
     private void DestroyEffectPlay(Collision other)
     {
         
@@ -86,4 +105,13 @@ public class Damageable : MonoBehaviour, IDamageable
         HitParticlePlay(contacts);
         Debug.Log("맞았어");
     }
+    
+    // private void OnTriggerEnter(Collider other)
+    // {
+    //     StartCoroutine(FlashOnHit());
+    //     mmfPlayer.PlayFeedbacks();
+    //     Vector3 contacts = other.ClosestPoint(transform.position);
+    //     HitParticlePlay(contacts);
+    //     Debug.Log("맞았어");
+    // }
 }

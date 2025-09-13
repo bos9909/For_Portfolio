@@ -71,7 +71,7 @@ public class Bullet : MonoBehaviour
     //         damageable.TakeDamage((int)damage);
     //     }
     //
-    //     StartCoroutine(PlayHitEffect(hitEffect));
+    //     EffectManager.Instance.PlayEffect("Hit04", other.ClosestPoint(transform.position) , Quaternion.identity);
     //     PoolManager.Instance.Return("Bullet", gameObject);
     // }
 
@@ -89,6 +89,5 @@ public class Bullet : MonoBehaviour
         EffectManager.Instance.PlayEffect("Hit04", hitPoint , Quaternion.identity);
         PoolManager.Instance.Return("Bullet", gameObject);
     }
-    
 
 }
