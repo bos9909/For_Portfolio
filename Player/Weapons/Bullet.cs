@@ -5,15 +5,10 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    //발사, 충돌시 재생할 이펙트
-    [SerializeField]
-    public GameObject hitEffect;
-    public GameObject fireEffect;
-    
     //표준 속도 300 정도가 적당하다. 날라댕기는 게임이라 100이면 너무 느림
     public float speed = 300f;
     public float lifeTime = 3f;
-    public float damage = 10f;
+    public int damage = 1;
     
     //플레이어 속도보다 더 빠르게 발사되기 위한 벡터 3 변수
     private float spawnTime;
@@ -77,7 +72,10 @@ public class Bullet : MonoBehaviour
 
     void OnCollisionEnter(Collision other)
     {
+        Debug.Log("부딪힌 대상: " + other.gameObject.name);
+        
         IDamageable damageable = other.gameObject.GetComponent<IDamageable>();
+        
         if (damageable != null)
         {
             damageable.TakeDamage((int)damage);

@@ -5,7 +5,8 @@ using MoreMountains.Feedbacks;
 
 public class Damageable : MonoBehaviour, IDamageable
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    //이 스크립트는 에너미 베이스에 통합되어서 필요없음
+    //하지만 다른 오브젝트에 붙여서 피격 효과만 낼 수 있음
 
     private MMF_Player mmfPlayer;
     //피격 이펙트가 있을 때 사용.

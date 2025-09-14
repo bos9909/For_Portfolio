@@ -17,3 +17,4 @@ MonoBehaviour:
   moveSpeed: 30
   rotaitonSpeed: 25
   stopDistance: 5
+  curveFactor: 0.5
