@@ -12,6 +12,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
     
     private EnemyMovement _movement;
     private EnemyStatus _status;
+    private EnemyAttackController _attacker;
 
     private MMF_Player _mmfPlayer;
     private Renderer _renderer;
@@ -41,6 +42,8 @@ public class EnemyBase : MonoBehaviour, IDamageable
     {
         _status = GetComponent<EnemyStatus>();
         _movement = GetComponent<EnemyMovement>();
+        _attacker = GetComponent<EnemyAttackController>();
+        
         _mmfPlayer = GetComponent<MMF_Player>();
         _renderer = GetComponent<Renderer>();
 
@@ -55,10 +58,10 @@ public class EnemyBase : MonoBehaviour, IDamageable
         // 플레이어 할당.
         if (playerTransform == null)
         {
-            playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+            var player = GameObject.FindGameObjectWithTag("Player");
+            playerTransform = player.transform;
         }
         _movement.SetTarget(playerTransform);
-
         // 초기 상태를 추적으로 설정
         ChangeState(EnemyState.Chasing);
     }
@@ -66,7 +69,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
     private void Update()
     {
         // 현재 상태가 죽음이면 아무것도 안함
-        if (CurrentState == EnemyState.Dead) return;
+        if (CurrentState == EnemyState.Dead || !playerTransform) return;
 
         // 상태로 행동 관리
         switch (CurrentState)
@@ -85,19 +88,30 @@ public class EnemyBase : MonoBehaviour, IDamageable
         // 플레이어 추적
         _movement.Move();
 
-        // 상태 전환용 함수, 일단 임시
-        // float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-        // if (distanceToPlayer <= _attacker.GetAttackRange() && _attacker.CanAttack)
-        // {
-        //     ChangeState(EnemyState.Attacking);
-        // }
+        // 추적 중 플레이어와의 거리 계산
+        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+        
+        // 사정거리 안에 들어오면 공격 상태로 변경
+        if (distanceToPlayer <= _attacker.GetAttackRange() && _attacker.CanAttack)
+        {
+            ChangeState(EnemyState.Attacking);
+        }
     }
 
     private void UpdateAttackingState()
     {
-        // 공격 상태에서는 움직이지 않도록 할 수 있음
-        // _movement.Stop(); // 이 명령은 ChangeState에서 처리하는 것이 더 좋음
-        // 추격 상태로 전환할지 나중에 결정
+        // 공격 실행 함수 
+        _attacker.Attack(playerTransform);
+        
+        // 플레이어와의 거리 계산
+        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+        
+        // 플레이어가 공격 사거리를 벗어나면
+        if (distanceToPlayer > _attacker.GetAttackRange())
+        {
+            // 추격 상태로 전환
+            ChangeState(EnemyState.Chasing);
+        }
     }
 
     private void ChangeState(EnemyState newState)
@@ -115,6 +129,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
                 break;
             case EnemyState.Dead:
                 _movement.Stop(); // 죽었으니 당연히 멈춤
+                GetComponent<Collider>().enabled = false;
                 break;
         }
     }

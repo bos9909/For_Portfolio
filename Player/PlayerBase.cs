@@ -1,16 +1,18 @@
 // PlayerBase.cs
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerMovement),typeof(PlayerAttackController))]
-public class PlayerBase : MonoBehaviour 
+[RequireComponent(typeof(PlayerMovement),typeof(PlayerAttackController), typeof(PlayerStatus))]
+public class PlayerBase : MonoBehaviour, IDamageable
 {
     private PlayerMovement _movement;
     private PlayerAttackController _attacker;
+    private PlayerStatus _status; //플레이어 스탯 등을 가지고 있는 스크립트
     
     private void Awake()
     {
         _movement = GetComponent<PlayerMovement>();
         _attacker = GetComponent<PlayerAttackController>();
+        _status = GetComponent<PlayerStatus>();
     }
     
     void Start()
@@ -33,6 +35,10 @@ public class PlayerBase : MonoBehaviour
             //공격관련 구독
             PlayerInputHandler.Instance.OnFirePrimaryPressed += HandleFirePrimary;
             PlayerInputHandler.Instance.OnSwitchWeaponPressed += HandleSwitchWeapon;
+            
+            
+            //게임 오버 판정용 구독
+            _status.OnDeath += Die;
         }
     }
 
@@ -48,6 +54,8 @@ public class PlayerBase : MonoBehaviour
             //공격관련 구독 해제
             PlayerInputHandler.Instance.OnFirePrimaryPressed -= HandleFirePrimary;
             PlayerInputHandler.Instance.OnSwitchWeaponPressed -= HandleSwitchWeapon;
+            //게임 오버 관련 구독 해제
+            _status.OnDeath -= Die;
         }
     }
 
@@ -72,6 +80,36 @@ public class PlayerBase : MonoBehaviour
     {
         _attacker.SwitchWeapon();
     }
+    
+    
+    public void TakeDamage(int damage)
+    {
+        Debug.Log("맞았어");
+        _status.TakeHit(); 
+    }
+    
+    //게임 오버 처리용 함수
+    private void Die()
+    {
+        Debug.LogError("플레이어 사망!");
+        this.enabled = false; // PlayerBase 스크립트를 꺼서 Update와 입력 처리를 막음
+        _movement.enabled = false;
+    }
+    
   
+    //플레이어 피격 처리용 함수
+    // public void TakeDamage(int damage)
+    // {
+    //     //데미지 계산
+    //     _status.TakeDamage((int)damage);
+    //
+    //     //피격 이펙트
+    //     _mmfPlayer?.PlayFeedbacks();
+    //     StartCoroutine(FlashOnHit());
+    //     EffectManager.Instance.PlayEffect("HitEffect01", transform.position, Quaternion.identity);
+    //
+    //     //무적상태 관리용
+    //     StartCoroutine(InvincibilityCoroutine());
+    // }
     
 }
