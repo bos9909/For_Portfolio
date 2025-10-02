@@ -13,6 +13,8 @@ public class PlayerBase : MonoBehaviour, IDamageable
         _movement = GetComponent<PlayerMovement>();
         _attacker = GetComponent<PlayerAttackController>();
         _status = GetComponent<PlayerStatus>();
+        //게임 오버 판정용 구독 이것만 우선 구독
+        _status.OnDeath += Die;
     }
     
     void Start()
@@ -20,6 +22,8 @@ public class PlayerBase : MonoBehaviour, IDamageable
         // 게임이 시작되면 커서를 잠그기
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        // 스크립트 실행 순서 꼬임을 방지하기 위한 함수
+        SubscribeToInputEvents();
     }
 
     //이벤트를 구독
@@ -31,14 +35,10 @@ public class PlayerBase : MonoBehaviour, IDamageable
             PlayerInputHandler.Instance.OnMoveInput += _movement.SetMoveInput;
             PlayerInputHandler.Instance.OnAltitudeInput += _movement.SetAltitudeInput;
             PlayerInputHandler.Instance.OnAimInput += _movement.SetAimInput;
-            
             //공격관련 구독
             PlayerInputHandler.Instance.OnFirePrimaryPressed += HandleFirePrimary;
             PlayerInputHandler.Instance.OnSwitchWeaponPressed += HandleSwitchWeapon;
             
-            
-            //게임 오버 판정용 구독
-            _status.OnDeath += Die;
         }
     }
 
@@ -96,6 +96,48 @@ public class PlayerBase : MonoBehaviour, IDamageable
         _movement.enabled = false;
     }
     
+    private void SubscribeToInputEvents()
+    {
+        //순서 꼬임을 방지하기 위해 널 체크
+        if (PlayerInputHandler.Instance != null)
+        {
+            PlayerInputHandler.Instance.OnMoveInput += _movement.SetMoveInput;
+            PlayerInputHandler.Instance.OnAltitudeInput += _movement.SetAltitudeInput;
+            PlayerInputHandler.Instance.OnAimInput += _movement.SetAimInput;
+            PlayerInputHandler.Instance.OnFirePrimaryPressed += HandleFirePrimary;
+            PlayerInputHandler.Instance.OnSwitchWeaponPressed += HandleSwitchWeapon;
+        }
+        else
+        {
+            // 만약 Instance를 못 찾으면 경고를 띄워 문제를 바로 알 수 있게 함
+            Debug.LogError("PlayerInputHandler.Instance를 찾을 수 없습니다! InputHandler 오브젝트가 씬에 있는지 확인하세요.");
+        }
+    }
+    
+    private void UnsubscribeFromInputEvents()
+    {
+        // 널 체크하고 해지
+        if (PlayerInputHandler.Instance != null)
+        {
+            PlayerInputHandler.Instance.OnMoveInput -= _movement.SetMoveInput;
+            PlayerInputHandler.Instance.OnAltitudeInput -= _movement.SetAltitudeInput;
+            PlayerInputHandler.Instance.OnAimInput -= _movement.SetAimInput;
+            PlayerInputHandler.Instance.OnFirePrimaryPressed -= HandleFirePrimary;
+            PlayerInputHandler.Instance.OnSwitchWeaponPressed -= HandleSwitchWeapon;
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        // Status 관련 구독 해지
+        if (_status != null)
+        {
+            _status.OnDeath -= Die;
+        }
+        
+        // InputHandler 관련 구독 해지
+        UnsubscribeFromInputEvents();
+    }
   
     //플레이어 피격 처리용 함수
     // public void TakeDamage(int damage)

@@ -33,6 +33,7 @@ public class PlayerInputHandler : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         
+        
         OnMoveInput?.Invoke(new Vector2(horizontal, vertical));
 
         // 고도 입력 감지 및 방송

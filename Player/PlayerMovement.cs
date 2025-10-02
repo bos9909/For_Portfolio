@@ -5,9 +5,9 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float moveSpeed = 5f;
-    public float acceleration = 30f;
-    public float deceleration = 5f;
+    public float moveSpeed = 50f;
+    public float acceleration = 55f;
+    public float deceleration = 10f;
 
     [Header("Altitude Settings")]
     public float altitudeSpeed = 3f;
